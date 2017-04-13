@@ -20,8 +20,11 @@ class CanvasViewController: UIViewController {
     var newlyCreatedFace: UIImageView!
     
     var newlyCreatedFaceOriginalCenter: CGPoint!
+    
+    var placedFaceOriginalCenter: CGPoint!
 
     @IBOutlet weak var arrowView: UIImageView!
+
     
     @IBAction func didPanTray(_ sender: UIPanGestureRecognizer) {
         let translation = sender.translation(in: view)
@@ -76,13 +79,15 @@ class CanvasViewController: UIViewController {
             newlyCreatedFace.center.y += trayView.frame.origin.y
             newlyCreatedFaceOriginalCenter = newlyCreatedFace.center
             
-            newlyCreatedFace.addGestureRecognizer(UIPanGestureRecognizer(target:self, action: #selector(didPanPlacedFace)))
-            newlyCreatedFace.isUserInteractionEnabled = true
             
             
         }
         if state == .changed {
             newlyCreatedFace.center = CGPoint(x: newlyCreatedFaceOriginalCenter.x + translation.x, y: newlyCreatedFaceOriginalCenter.y + translation.y)
+        }
+        if state == .ended {
+            newlyCreatedFace.addGestureRecognizer(UIPanGestureRecognizer(target:self, action: #selector(didPanPlacedFace)))
+            newlyCreatedFace.isUserInteractionEnabled = true
         }
     }
     
@@ -90,8 +95,11 @@ class CanvasViewController: UIViewController {
         let state = sender.state
         let translation = sender.translation(in: view)
         var placedFace = sender.view as! UIImageView
+        if state == .began {
+            placedFaceOriginalCenter = placedFace.center
+        }
         if state == .changed {
-            placedFace.center = CGPoint(x: placedFace.center.x + translation.x, y: placedFace.center.y + translation.y)     
+            placedFace.center = CGPoint(x: placedFaceOriginalCenter.x + translation.x, y: placedFaceOriginalCenter.y + translation.y)     
         }
     }
 
